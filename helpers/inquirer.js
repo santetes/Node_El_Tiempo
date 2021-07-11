@@ -62,30 +62,26 @@ const leerInput = async (message) => {
     return respuesta;
 };
 
-const listadoBorrarTarea = async (tareasArr) => {
+const seleccionaLugar = async (arrayResultados) => {
     let choices = [];
-    //Aqui para añadir las posibles selecciones al array utilizo el mento foreach y push
-    tareasArr.forEach((tarea) => {
+
+    arrayResultados.forEach((lugar) => {
         choices.push({
-            value: tarea.id,
-            name: tarea.desc,
+            value: lugar.id,
+            name: lugar.dir,
         });
-    });
-    choices.push({
-        value: false,
-        name: 'CANCELAR',
     });
 
     const opciones = {
         type: 'list',
-        name: 'tarea',
-        message: 'selecciona la tarea a borrar',
+        name: 'lugarSeleccionado',
+        message: 'selecciona ubicación',
         choices,
     };
 
-    const tarea = await inquirer.prompt(opciones);
+    const { lugarSeleccionado } = await inquirer.prompt(opciones);
 
-    return tarea;
+    return lugarSeleccionado;
 };
 
 const confirmacionBorrado = async (message) => {
@@ -123,7 +119,7 @@ module.exports = {
     startMenu,
     pausa,
     leerInput,
-    listadoBorrarTarea,
+    seleccionaLugar,
     confirmacionBorrado,
     listadoCompletarTarea,
 };
