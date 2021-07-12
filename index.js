@@ -1,13 +1,16 @@
+//Importación tanto de los menús Inquirer como de la clase Búsqueda
 const { leerInput, startMenu, pausa, seleccionaLugar } = require('./helpers/inquirer');
 const Busquedas = require('./models/busqueda');
 require('colors');
 
+//Función principal del programa. Luego la llamaremos para que se ejecute nada mas arrancar Index.js
 const main = async () => {
     const busquedas = new Busquedas();
     let opt;
     let arrayResultados = [];
 
     do {
+        //arrancamos menú y esperamos opción seleccionada
         opt = await startMenu();
 
         switch (opt) {
@@ -15,7 +18,7 @@ const main = async () => {
                 //Mostrar mensaje
                 const lugar = await leerInput('Ciudad: ');
 
-                //Buscar Lugares
+                //Buscar Lugares utilizando axios y la API mapbox
                 const data = await busquedas.ciudad(lugar);
                 let dataTotal = data.data.features;
                 dataTotal.forEach((e) =>
@@ -35,13 +38,11 @@ const main = async () => {
 
                 const lugarSeleccionado = await seleccionaLugar(arrayResultados);
                 arrayResultados = [];
-                dataTotal.forEach((objetoLugar) => {
-                    if (objetoLugar.id === lugarSeleccionado) {
-                        txtCiudad = objetoLugar.text;
-                        latCiudad = objetoLugar.center[1].toString();
-                        lngCiudad = objetoLugar.center[0].toString();
-                    }
-                });
+
+                const objetoLugar = dataTotal.find((dT) => dT.id === lugarSeleccionado);
+                txtCiudad = objetoLugar.text;
+                latCiudad = objetoLugar.center[1].toString();
+                lngCiudad = objetoLugar.center[0].toString();
 
                 //clima
                 const clima = await busquedas.temperatura(latCiudad, lngCiudad);

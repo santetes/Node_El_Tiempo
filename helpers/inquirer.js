@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 require('colors');
 
 const startMenu = async () => {
+    //creamos el objeto literal opciones para luego pasarselo a inquirer.promp(opciones)
     const opciones = {
         type: 'list',
         name: 'seleccion',
@@ -27,11 +28,13 @@ const startMenu = async () => {
     console.log('      Seleccione una Opción '.white);
     console.log('====================================\n'.green);
 
+    //desestructuramos el resultado de la selección utilizando el value de las opciones
     const { seleccion } = await inquirer.prompt(opciones);
 
     return seleccion;
 };
 
+//Este bloque del inquirer sirve para establecer una pausa (pulsa enter para continuar)
 const pausa = async () => {
     const mensaje = {
         name: 'pregunta',
@@ -42,6 +45,7 @@ const pausa = async () => {
     await inquirer.prompt(mensaje);
 };
 
+//BLoque de inquirer para permitir al usuario escribir un lugar a buscar
 const leerInput = async (message) => {
     const question = [
         {
@@ -57,6 +61,7 @@ const leerInput = async (message) => {
         },
     ];
 
+    //devuelve lo escrito por el usuario
     const { respuesta } = await inquirer.prompt(question);
 
     return respuesta;
@@ -65,10 +70,11 @@ const leerInput = async (message) => {
 const seleccionaLugar = async (arrayResultados) => {
     let choices = [];
 
-    arrayResultados.forEach((lugar) => {
+    arrayResultados.forEach((lugar, i) => {
+        let idx = `${i + 1}`.green;
         choices.push({
             value: lugar.id,
-            name: lugar.dir,
+            name: `${idx}. ${lugar.dir}`,
         });
     });
 
