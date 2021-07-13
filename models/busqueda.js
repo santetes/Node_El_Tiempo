@@ -9,8 +9,6 @@ class Busquedas {
     }
 
     async ciudad(lugar = '') {
-        let respuesta;
-
         try {
             const instance = axios.create({
                 baseURL: `https://api.mapbox.com/geocoding/v5/mapbox.places/${lugar}.json`,
@@ -20,18 +18,26 @@ class Busquedas {
                     language: 'es',
                 },
             });
-            respuesta = await instance.get();
+            let { data } = await instance.get();
+            let { features } = data;
+            let resultado = features.map((item) => {
+                return {
+                    id: item.id,
+                    place_name: item.place_name,
+                    center: item.center,
+                };
+            });
+            return resultado;
         } catch (error) {
             throw error;
         }
-
-        return respuesta;
     }
 
-    async temperatura(lat = '', long = '') {
-        let latComa = lat.replace('.', ',');
-        let longComa = long.replace('.', ',');
-        let respuesta;
+    async temperatura(center) {
+        const coordenadas = {
+            lat: center[1].toString().replace('.', ','),
+            long: center[0].toString().replace('.', ','),
+        };
 
         let instance = axios.create({
             baseURL: `https://api.openweathermap.org/data/2.5/weather`,
@@ -39,24 +45,30 @@ class Busquedas {
                 appid: process.env.OPENWEATHERMAP_KEY,
                 units: 'metric',
                 lang: 'es',
-                lat: latComa,
-                lon: longComa,
+                lat: coordenadas.lat,
+                lon: coordenadas.long,
             },
         });
         try {
-            respuesta = await instance.get();
+            let { data } = await instance.get();
+            return {
+                temp: data.main.temp,
+                temp_min: data.main.temp_min,
+                temp_max: data.main.temp_max,
+            };
         } catch (error) {
             throw error;
         }
-        // try {
-        //     respuesta = await axios.get(
-        //         'https://' +
-        //             `api.openweathermap.org/data/2.5/weather?lat=${latComa}&lon=${longComa}&appid=a98f0da4bdd9814620480a758b7d4cf0&units=metric&lang=es`
-        //     );
-        // } catch (error) {
-        //     throw error;
-        // }
-        return respuesta;
+    }
+
+    mostrarResultados(lugar, arrayCoordenadas, temp, min, max) {
+        console.log('\nInformación de Ciudad\n'.green);
+        console.log(`Ciudad: ${lugar}`);
+        console.log(`Lat: ${arrayCoordenadas[1]}`);
+        console.log(`Lng: ${arrayCoordenadas[0]}`);
+        console.log(`Temperatura: ${temp}`);
+        console.log(`Mínima: ${min}`);
+        console.log(`Máxima: ${max}`);
     }
 }
 

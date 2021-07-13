@@ -67,27 +67,28 @@ const leerInput = async (message) => {
     return respuesta;
 };
 
-const seleccionaLugar = async (arrayResultados) => {
+const seleccionaLugar = async (data) => {
     let choices = [];
 
-    arrayResultados.forEach((lugar, i) => {
+    data.forEach((lugares, i) => {
         let idx = `${i + 1}`.green;
         choices.push({
-            value: lugar.id,
-            name: `${idx}. ${lugar.dir}`,
+            value: lugares.id,
+            name: `${idx}. ${lugares.place_name}`,
         });
     });
 
     const opciones = {
         type: 'list',
-        name: 'lugarSeleccionado',
+        name: 'IdLugarSeleccionado',
         message: 'selecciona ubicación',
         choices,
     };
 
-    const { lugarSeleccionado } = await inquirer.prompt(opciones);
+    const { IdLugarSeleccionado } = await inquirer.prompt(opciones);
+    let respuesta = data.find((e) => e.id === IdLugarSeleccionado);
 
-    return lugarSeleccionado;
+    return respuesta;
 };
 
 const confirmacionBorrado = async (message) => {
