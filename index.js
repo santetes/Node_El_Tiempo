@@ -7,7 +7,6 @@ require('colors');
 const main = async () => {
     const busquedas = new Busquedas();
     let opt;
-    let arrayResultados = [];
 
     do {
         //arrancamos menú y esperamos opción seleccionada
@@ -24,6 +23,12 @@ const main = async () => {
                 //Selecciona lugar
                 const { place_name, center } = await seleccionaLugar(data);
 
+                //Agrego a historial el lugar seleccionado
+                busquedas.agrega(place_name);
+
+                //Guardo el historial en DB
+                busquedas.guarda();
+
                 //clima
                 const { temp, temp_min, temp_max } = await busquedas.temperatura(center);
 
@@ -33,7 +38,10 @@ const main = async () => {
                 break;
 
             case 2:
-                console.log(busquedas.historial);
+                busquedas.historial.forEach((lugar, i) => {
+                    let idx = `${i + 1}. `.green;
+                    console.log(idx, lugar);
+                });
                 break;
         }
         if (opt !== 0) await pausa();

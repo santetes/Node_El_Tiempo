@@ -1,11 +1,14 @@
+const fs = require('fs');
 require('dotenv').config();
 const axios = require('axios');
 
 class Busquedas {
-    historial = ['Madrid', 'Andorra', 'Paris'];
+    historial = [];
+    pathDb = './Db/dataBase.json';
+    archivoJson;
 
     constructor() {
-        //TODO: leer ciudad si existe
+        this.leerBaseDeDatos();
     }
 
     async ciudad(lugar = '') {
@@ -69,6 +72,28 @@ class Busquedas {
         console.log(`Temperatura: ${temp}`);
         console.log(`Mínima: ${min}`);
         console.log(`Máxima: ${max}`);
+    }
+
+    agrega(lugar) {
+        if (this.historial.includes(lugar)) return;
+        this.historial.unshift(lugar);
+        if (this.historial.length > 5) this.historial.pop();
+    }
+
+    guarda() {
+        this.objetoHistorial = {
+            historial: this.historial,
+        };
+        fs.writeFileSync(this.pathDb, JSON.stringify(this.objetoHistorial));
+    }
+
+    leerBaseDeDatos() {
+        if (!fs.existsSync(this.pathDb)) return null;
+        this.archivoJson = fs.readFileSync(this.pathDb, {
+            encoding: 'utf-8',
+        });
+        const hitorialObj = JSON.parse(this.archivoJson);
+        this.historial = hitorialObj.historial;
     }
 }
 
